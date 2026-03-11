@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestor de Tareas</title>
+</head>
+<body>
+    <h1>Inicia seción para continuar</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="usuario">Usuario:</label>
+        <input type="text" id="usuarioId" name="usuario"><br><br>
+
+        <label for="contraseña">Contraseña:</label>
+        <input type="text" id="contraseñaId" name="contraseña"><br><br>
+
+        <button type="submit">iniciar seción</button>
+    </form>
+</body>
+</html>
