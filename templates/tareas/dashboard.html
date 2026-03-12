@@ -139,7 +139,7 @@
     width: fit-content;
     }
 
-    .status.terminado {
+    .status.terminada {
     background-color: #d4edda;
     color: #155724;
     }
@@ -169,12 +169,16 @@
     color: #b00020;
     font-weight: bold;
     }
+    /* Botones estado tarea */
+
+
   </style>
 </head>
 <body>
 
   <div class="tareas-container">
     <button id="openTareaModalBtn" type="button">Tarea nueva</button>
+    <button id="logoutBtn" type="button">Logout</button>
     <div class="tareas-list">
         <h2>Mis tareas</h2>
         <ul id="listaTareas"></ul>
@@ -185,8 +189,9 @@
   <div id="tareaModal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeTareaModalBtn">&times;</span>
-      <h3>Tarea nueva</h3>
+      <h3 id="modalTitulo"></h3>
       <form id="tareaForm">
+        <input type="hidden" id="tareaId" name="tarea">
         <input type="text" id="descripcionId" name="descripcion" placeholder="Descripción de tarea" required><br>
         <label for="fechaFinId">Fecha de fin:</label><br>
         <input type="date" id="fechaFinId" name="fecha_fin" required><br>
@@ -255,31 +260,46 @@
             lista.innerHTML = "";
 
             tareas.forEach(tarea => {
-            const li = document.createElement("li");
+                const li = document.createElement("li");
 
-            const statusTexto = tarea.status ? "Terminado" : "Pendiente";
-            const statusClase = tarea.status ? "terminado" : "pendiente";
+                const statusTexto = tarea.status ? "Terminada" : "Pendiente";
+                const statusClase = tarea.status ? "terminada" : "pendiente";
+                  
+                  li.innerHTML = `
+                    <div class="tarea">
+                      <div class="descripcion">${tarea.descripcion}</div>
+                      <div class="fecha">Fecha fin: ${tarea.fecha_fin}</div>
+                      <div class="acciones">
+                        <div style="display:flex; align-items:center; gap:6px;">
+                          <input type="checkbox" class="statusCheck"
+                                ${tarea.status ? "checked" : ""}
+                                onchange="cambiarEstadoTarea(${tarea.id}, this.checked)">
+                          <span>Completada</span>
+                        </div>
+                        <button class="eliminarBtn" onclick="eliminarTarea(${tarea.id})">✗ Eliminar</button>
+                        <button class="editarBtn" onclick="editarTarea(${tarea.id})">Editar</button>
+                      </div>
+                    </div>
+                  `;
+                  
 
-            li.innerHTML = `
-                <div class="descripcion">${tarea.descripcion}</div>
-                <div class="fecha">Fecha fin: ${tarea.fecha_fin}</div>
-                <div class="status ${statusClase}">${statusTexto}</div>
-            `;
-
-            lista.appendChild(li);
+                lista.appendChild(li);
             });
+            
         } catch (error) {
             console.error("Error al cargar tareas:", error);
         }
     }
 
-    // MODAL
+    // MODAL AÑADIR TAREA 
     const modal = document.getElementById("tareaModal");
     const openBtn = document.getElementById("openTareaModalBtn");
     const closeBtn = document.getElementById("closeTareaModalBtn");
 
     openBtn.onclick = function() {
       tareaForm.reset();
+      document.getElementById("tareaId").value = "";
+      document.getElementById("modalTitulo").textContent = "Añadir tarea";
       modal.style.display = "block";
     }
 
@@ -297,42 +317,125 @@
     document.getElementById("tareaForm").addEventListener("submit", async function(e) {
         e.preventDefault();
         
-        msgBox.textContent = "";
+        Id = document.getElementById("tareaId").value
         const descripcion = document.getElementById('descripcionId').value.trim();
         const fecha_fin = document.getElementById('fechaFinId').value;
+        msgBox.textContent = "";
+
 
         const nuevaTarea = {
             descripcion: descripcion,
             fecha_fin: fecha_fin
         };
 
-        try {
+        if(Id){
+
+          try {
+            const response = await api.patch(`/tareas/${Id}/`, nuevaTarea);  
+            await cargarTareas();
+            tareaForm.reset();
+            modal.style.display = "none";
+
+          } catch (error) {
+              if (error.response) {
+                  const data = error.response.data;
+                  let mensajes = [];
+                  for (const campo in data) {
+                      if (Array.isArray(data[campo])) {
+                          const texto = data[campo].join(", ");
+                          mensajes.push(texto);
+                      }
+                  }
+                  msgBox.textContent = `${mensajes.join(" | ")}`;
+              } else if (error.request) {
+                  msgBox.textContent = "No se recibió respuesta del servidor.";
+              } else {
+                  msgBox.textContent = "Error al preparar la petición.";
+              }
+          }
+
+        }
+        else{
+
+          try {
             const response = await api.post("/tareas/", nuevaTarea);  
             await cargarTareas();
             tareaForm.reset();
             modal.style.display = "none";
 
-        } catch (error) {
-            if (error.response) {
-                const data = error.response.data;
-                let mensajes = [];
-                for (const campo in data) {
-                    if (Array.isArray(data[campo])) {
-                        const texto = data[campo].join(", ");
-                        mensajes.push(texto);
-                    }
-                }
-                msgBox.textContent = `${mensajes.join(" | ")}`;
-            } else if (error.request) {
-                msgBox.textContent = "No se recibió respuesta del servidor.";
-            } else {
-                msgBox.textContent = "Error al preparar la petición.";
-            }
+          } catch (error) {
+              if (error.response) {
+                  const data = error.response.data;
+                  let mensajes = [];
+                  for (const campo in data) {
+                      if (Array.isArray(data[campo])) {
+                          const texto = data[campo].join(", ");
+                          mensajes.push(texto);
+                      }
+                  }
+                  msgBox.textContent = `${mensajes.join(" | ")}`;
+              } else if (error.request) {
+                  msgBox.textContent = "No se recibió respuesta del servidor.";
+              } else {
+                  msgBox.textContent = "Error al preparar la petición.";
+              }
+          }
         }
+ 
         
     });
 
-    
+    // CAMBIAR ESTADO TAREA (PENDIENTE, TERMINADA)
+    async function cambiarEstadoTarea(tareaId, estadoActual) {
+        try {
+            const response = await api.patch(`/tareas/${tareaId}/`, { status: estadoActual });
+            await cargarTareas();
+        } catch (error) {
+            console.error("Error al actualizar estado:", error);
+        }
+    }
+
+    // ELIMINAR TAREA
+    async function eliminarTarea(tareaId) {
+        const confirmar = window.confirm("¿Estás seguro de que quieres eliminar esta tarea?");
+        if (!confirmar) {
+          return;
+        }
+
+        try {
+            const response = await api.delete(`/tareas/${tareaId}/`);
+            await cargarTareas();
+        } catch (error) {
+            console.error("Error al eliminar tarea:", error);
+        }
+    }
+
+    // EDITAR TAREA
+    async function editarTarea(tareaId) {
+      tareaForm.reset();
+      document.getElementById("modalTitulo").textContent = "Editar tarea";
+      document.getElementById("tareaId").value = tareaId;
+      modal.style.display = "block";
+
+      try {
+        const res = await api.get(`/tareas/${tareaId}/`);
+        const tarea = res.data;   
+
+        document.getElementById("descripcionId").value = tarea.descripcion;
+        document.getElementById("fechaFinId").value = tarea.fecha_fin;
+        
+      } catch (error) {
+        console.error("Error al cargar tarea:", error);
+      }
+    }
+
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    logoutBtn.onclick = function() {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      window.location.href = "{% url 'login' %}";
+    }
 
     window.onload = cargarTareas;
   </script>
