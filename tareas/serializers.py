@@ -24,13 +24,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("El nombre de usuario debe tener como mínimo 3 caracteres.")
         
         return value
-    
-    def validate_email(self, value):
-        if value:
-            value = value.strip()
-            if not re.match(r'^[^@]+@[^@]+$', value):
-                raise serializers.ValidationError("El email debe contener solo un arroba")
-        return value
+
 
     def validate_password(self, value):
         if not value:

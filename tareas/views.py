@@ -65,3 +65,9 @@ class UsuarioView(APIView):
 
 def login_view(request):
     return render(request, "tareas/login.html")
+
+def registro_view(request):
+    return render(request, "tareas/registro.html")
+
+def dashboard_view(request):
+    return render(request, "tareas/dashboard.html")
