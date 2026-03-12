@@ -6,12 +6,25 @@ from .models import Tarea
 from .serializers import TareaSerializer, UsuarioSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
+
 
 class TareaView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         tareas = Tarea.objects.filter(usuario=request.user)
+        filtro_status = request.query_params.get('status')
+
+        if filtro_status == 'todas': 
+            tareas = tareas
+        elif filtro_status == 'pendientes':
+            tareas = tareas.filter(status=False)
+        elif filtro_status == 'completadas':
+            tareas = tareas.filter(status=True)
+        elif filtro_status == 'atrasadas':
+            tareas = tareas.filter(status=False, fecha_fin__lt=timezone.now())
+
         serializer = TareaSerializer(tareas, many = True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

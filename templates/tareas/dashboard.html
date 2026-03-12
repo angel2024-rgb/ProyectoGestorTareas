@@ -4,27 +4,210 @@
   <meta charset="UTF-8">
   <title>Tareas con modal</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f4f4f4;
+    /* ── Contenedor principal ── */
+    .tareas-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      font-family: sans-serif;
     }
 
-    /* Botón principal */
+    /* ── Header ── */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .app-title {
+      font-size: 22px;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .app-title span {
+      font-size: 13px;
+      font-weight: 400;
+      color: #888;
+      margin-left: 8px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Botones del header ── */
     #openTareaModalBtn {
-      display: block;
-      margin: 50px auto;
-      background-color: #007BFF;
-      color: white;
+      font-size: 13px;
+      padding: 7px 14px;
+      border-radius: 8px;
       border: none;
-      padding: 12px 24px;
-      border-radius: 6px;
+      background: #007BFF;
+      color: #fff;
       cursor: pointer;
-      font-size: 16px;
+      font-weight: 500;
     }
 
     #openTareaModalBtn:hover {
-      background-color: #0056b3;
+      opacity: 0.85;
+    }
+
+    #logoutBtn {
+      font-size: 13px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background: transparent;
+      color: #666;
+      cursor: pointer;
+    }
+
+    #logoutBtn:hover {
+      background: #f5f5f5;
+    }
+
+    /* ── Filtros ── */
+    .filter-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 1rem;
+    }
+
+    .filter-btn {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 99px;
+      border: 1px solid #ddd;
+      background: transparent;
+      color: #666;
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background: #111;
+      color: #fff;
+      border-color: transparent;
+    }
+
+    /* ── Lista ── */
+    #listaTareas {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ── Tarjeta de tarea ── */
+    .task-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 14px 16px;
+      transition: border-color 0.15s;
+    }
+
+    .task-card:hover {
+      border-color: #ccc;
+    }
+
+    .task-card.completada {
+      opacity: 0.55;
+    }
+
+    .task-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    /* ── Checkbox ── */
+    .task-check {
+      margin-top: 2px;
+      width: 16px;
+      height: 16px;
+      accent-color: #1D9E75;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    /* ── Contenido de la tarea ── */
+    .task-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-desc {
+      font-size: 14px;
+      font-weight: 500;
+      color: #111;
+      margin: 0 0 4px;
+    }
+
+    .task-card.completada .task-desc {
+      text-decoration: line-through;
+      color: #aaa;
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .task-fecha {
+      font-size: 12px;
+      color: #888;
+    }
+
+    /* ── Badge de estado ── */
+    .task-badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-weight: 500;
+    }
+
+    .badge-pendiente {
+      background: #FAEEDA;
+      color: #854F0B;
+    }
+
+    .badge-completada {
+      background: #E1F5EE;
+      color: #0F6E56;
+    }
+
+    /* ── Botones de acción ── */
+    .task-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .editarBtn,
+    .eliminarBtn {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background: transparent;
+      color: #666;
+      cursor: pointer;
+    }
+
+    .editarBtn:hover {
+      background: #f5f5f5;
+    }
+
+    .eliminarBtn:hover {
+      color: #c0392b;
+      border-color: #f5c6c6;
+      background: #fff5f5;
     }
 
     /* Modal */
@@ -73,7 +256,7 @@
     }
 
     button {
-      background-color: #007BFF;;
+      background-color: #007BFF;
       color: white;
       border: none;
       padding: 12px 20px;
@@ -86,125 +269,63 @@
     button:hover {
       background-color: #218838;
     }
-    /* Listas */
-    .tareas-container {
-    max-width: 600px;
-    margin: 30px auto;
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-    font-family: Arial, sans-serif;
-    }
-
-    .tareas-list h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-    }
-
-    .tareas-list ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    }
-
-    .tareas-list li {
-    background: #fff;
-    margin-bottom: 15px;
-    padding: 15px;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    box-shadow: 0px 2px 6px rgba(0,0,0,0.05);
-    }
-
-    .descripcion {
-    font-size: 16px;
-    font-weight: bold;
-    color: #222;
-    }
-
-    .fecha {
-    font-size: 14px;
-    color: #555;
-    }
-
-    .status {
-    font-size: 14px;
-    font-weight: bold;
-    padding: 6px 10px;
-    border-radius: 6px;
-    width: fit-content;
-    }
-
-    .status.terminada {
-    background-color: #d4edda;
-    color: #155724;
-    }
-
-    .status.pendiente {
-    background-color: #f8d7da;
-    color: #721c24;
-    }
-
-    #openTareaModalBtn {
-    display: block;
-    margin: 0 auto 20px auto;
-    padding: 10px 20px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 15px;
-    }
-
-    #openTareaModalBtn:hover {
-    background-color: #0056b3;
-    }
-    .error {
-    margin-top: 10px;
-    color: #b00020;
-    font-weight: bold;
-    }
-    /* Botones estado tarea */
-
 
   </style>
 </head>
 <body>
 
+
+  <!-- BLOQUE DE TAREAS -->
   <div class="tareas-container">
-    <button id="openTareaModalBtn" type="button">Tarea nueva</button>
-    <button id="logoutBtn" type="button">Logout</button>
-    <div class="tareas-list">
-        <h2>Mis tareas</h2>
-        <ul id="listaTareas"></ul>
+    <div class="app-header">
+      <h2 class="app-title">Mis tareas <span id="counter"></span></h2>
+      <div class="header-actions">
+        <button id="openTareaModalBtn" type="button">+ Nueva tarea</button>
+        <button id="logoutBtn" type="button">Salir</button>
+      </div>
     </div>
+  
+    <div class="filter-bar">
+      <button class="filter-btn">Todas</button>
+      <button class="filter-btn">Pendientes</button>
+      <button class="filter-btn">Completadas</button>
+      <button class="filter-btn">Atrasadas</button>
+    </div>
+    <input type="hidden" id="listaTareasId" value="todas">
+
+    <ul id="listaTareas"></ul>
   </div>
 
 
+  <!-- MODAL AÑADIR EDITAR TAREA -->
   <div id="tareaModal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeTareaModalBtn">&times;</span>
       <h3 id="modalTitulo"></h3>
       <form id="tareaForm">
         <input type="hidden" id="tareaId" name="tarea">
-        <input type="text" id="descripcionId" name="descripcion" placeholder="Descripción de tarea" required><br>
-        <label for="fechaFinId">Fecha de fin:</label><br>
-        <input type="date" id="fechaFinId" name="fecha_fin" required><br>
+
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <input type="text" class="form-input" id="descripcionId" name="descripcion" placeholder="¿Qué hay que hacer?" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha de fin</label>
+          <input type="date" class="form-input" id="fechaFinId" name="fecha_fin" required>
+        </div>
+
         <button type="submit" id="añadirTareaBtn">Añadir</button>
       </form>
       <div id="msgBox" class="error"></div>
     </div>
   </div>
 
-
+  
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <script>
+
+    let listaTareasId = document.getElementById("listaTareasId").value
 
     // AXIOS
     const api = axios.create({
@@ -251,9 +372,11 @@
     );
 
     // CARGAR TAREAS
-    async function cargarTareas() {
+    async function cargarTareas(listaTareasId) {
+        document.getElementById("listaTareasId").value  = listaTareasId
+
         try {
-            const res = await api.get("/tareas/");
+            const res = await api.get(`/tareas/?status=${listaTareasId}`);
             const tareas = res.data;
 
             const lista = document.getElementById("listaTareas");
@@ -266,21 +389,27 @@
                 const statusClase = tarea.status ? "terminada" : "pendiente";
                   
                   li.innerHTML = `
-                    <div class="tarea">
-                      <div class="descripcion">${tarea.descripcion}</div>
-                      <div class="fecha">Fecha fin: ${tarea.fecha_fin}</div>
-                      <div class="acciones">
-                        <div style="display:flex; align-items:center; gap:6px;">
-                          <input type="checkbox" class="statusCheck"
-                                ${tarea.status ? "checked" : ""}
-                                onchange="cambiarEstadoTarea(${tarea.id}, this.checked)">
-                          <span>Completada</span>
+                  <div class="task-card ${tarea.status ? 'completada' : ''}" id="t${tarea.id}">
+                    <div class="task-top">
+                      <input type="checkbox" class="task-check"
+                            ${tarea.status ? "checked" : ""}
+                            onchange="cambiarEstadoTarea(${tarea.id}, this.checked)">
+                      <div class="task-body">
+                        <p class="task-desc">${tarea.descripcion}</p>
+                        <div class="task-meta">
+                          <span class="task-fecha">Fecha fin: ${tarea.fecha_fin}</span>
+                          <span class="task-badge ${tarea.status ? 'badge-completada' : 'badge-pendiente'}">
+                            ${tarea.status ? 'Completada' : 'Pendiente'}
+                          </span>
                         </div>
-                        <button class="eliminarBtn" onclick="eliminarTarea(${tarea.id})">✗ Eliminar</button>
-                        <button class="editarBtn" onclick="editarTarea(${tarea.id})">Editar</button>
+                      </div>
+                      <div class="task-actions">
+                        <button class="btn" onclick="editarTarea(${tarea.id})">Editar</button>
+                        <button class="btn btn-danger" onclick="eliminarTarea(${tarea.id})">✕</button>
                       </div>
                     </div>
-                  `;
+                  </div>
+                `;
                   
 
                 lista.appendChild(li);
@@ -291,7 +420,7 @@
         }
     }
 
-    // MODAL AÑADIR TAREA 
+    // AÑADIR EDITAR TAREA 
     const modal = document.getElementById("tareaModal");
     const openBtn = document.getElementById("openTareaModalBtn");
     const closeBtn = document.getElementById("closeTareaModalBtn");
@@ -323,16 +452,21 @@
         msgBox.textContent = "";
 
 
-        const nuevaTarea = {
-            descripcion: descripcion,
-            fecha_fin: fecha_fin
+        let nuevaTarea = {
+            descripcion: descripcion
         };
 
+        // EDITAR
         if(Id){
 
+          if (fecha_fin && new Date(fecha_fin) >= new Date()) {
+            nuevaTarea.fecha_fin = fecha_fin;
+          }
+
           try {
-            const response = await api.patch(`/tareas/${Id}/`, nuevaTarea);  
-            await cargarTareas();
+            const response = await api.patch(`/tareas/${Id}/`, nuevaTarea);
+            listaTareasId = document.getElementById("listaTareasId").value
+            await cargarTareas(listaTareasId);
             tareaForm.reset();
             modal.style.display = "none";
 
@@ -355,11 +489,15 @@
           }
 
         }
+        // AÑADIR
         else{
 
+          nuevaTarea.fecha_fin = fecha_fin;
+
           try {
-            const response = await api.post("/tareas/", nuevaTarea);  
-            await cargarTareas();
+            const response = await api.post("/tareas/", nuevaTarea);
+            listaTareasId = document.getElementById("listaTareasId").value  
+            await cargarTareas(listaTareasId);
             tareaForm.reset();
             modal.style.display = "none";
 
@@ -389,7 +527,8 @@
     async function cambiarEstadoTarea(tareaId, estadoActual) {
         try {
             const response = await api.patch(`/tareas/${tareaId}/`, { status: estadoActual });
-            await cargarTareas();
+            listaTareasId = document.getElementById("listaTareasId").value
+            await cargarTareas(listaTareasId);
         } catch (error) {
             console.error("Error al actualizar estado:", error);
         }
@@ -404,7 +543,8 @@
 
         try {
             const response = await api.delete(`/tareas/${tareaId}/`);
-            await cargarTareas();
+            listaTareasId = document.getElementById("listaTareasId").value
+            await cargarTareas(listaTareasId);
         } catch (error) {
             console.error("Error al eliminar tarea:", error);
         }
@@ -429,6 +569,7 @@
       }
     }
 
+    // LOGOUT
     const logoutBtn = document.getElementById("logoutBtn");
 
     logoutBtn.onclick = function() {
@@ -437,7 +578,28 @@
       window.location.href = "{% url 'login' %}";
     }
 
-    window.onload = cargarTareas;
+    //LÓGICA DE BOTONES FILTRO
+    const botones = document.querySelectorAll(".filter-btn");
+
+    botones.forEach(boton => {
+      boton.addEventListener("click", () => {
+        botones.forEach(b => b.classList.remove("active"));
+        boton.classList.add("active");
+
+        const estado = boton.textContent.toLowerCase(); 
+        cargarTareas(estado);
+      });
+    });
+
+    // SE MARCA EL BOTÓN TODAS Y SE CARGAN LAS TAREAS AL INICIAR
+    window.addEventListener("DOMContentLoaded", () => {
+      const botonTodas = document.querySelector(".filter-btn:first-child");
+
+      botonTodas.classList.add("active");
+
+      cargarTareas('todas');
+    });
+
   </script>
 
 </body>
