@@ -28,7 +28,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # Frontend pages
-    path('login/', frontend_views.login_view, name='login'),
+    path('', frontend_views.login_view, name='login'),
     path('registro/', frontend_views.registro_view, name='registro'),
     path('dashboard/', frontend_views.dashboard_view, name='dashboard'),
 ]
