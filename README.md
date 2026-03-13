@@ -7,13 +7,13 @@ Una aplicación para gestionar tareas personales, construida con Django REST Fra
 ### Pantalla de Login
 ![Login](screenshots/login.png)
 
-### Lista de tareas
+### Registro
 ![Registro](screenshots/registro.png)
 
-### Lista de tareas pendientes
+### Lista de tareas
 ![Lista de tareas](screenshots/listaTareas.png)
 
-### Lista de tareas completadas
+### Añadir tareas
 ![Añadir tarea](screenshots/añadirTarea.png)
 
 ## Características
