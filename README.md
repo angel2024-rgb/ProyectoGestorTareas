@@ -11,16 +11,20 @@ Una aplicación para gestionar tareas personales, construida con Django REST Fra
 ![Registro](screenshots/registro.png)
 
 ### Lista de tareas
-![Lista de tareas](screenshots/listaTareas.png)
+![Lista de tareas y categorías](screenshots/listaTareas.png)
 
-### Añadir tareas
+### Añadir categoría
+![Añadir categoría](screenshots/añadirCategoría.png)
+
+### Añadir tarea
 ![Añadir tarea](screenshots/añadirTarea.png)
+
 
 ## Características
 
--  **CRUD completo** de tareas (Crear, Leer, Actualizar, Eliminar)
+-  **CRUD completo** de tareas y categorías (Crear, Leer, Actualizar, Eliminar)
 -  **Autenticación JWT** (Access y Refresh tokens)
--  **Filtros** por estado (Todas/Pendientes/Completadas/Atrasadas)
+-  **Filtros** por estado de tarea (Todas/Pendientes/Completadas/Atrasadas) y por categoría
 -  **Interfaz responsive** con HTML/CSS/JavaScript vanilla
 -  **Refresco automático** de tokens
 
@@ -81,10 +85,11 @@ python manage.py runserver
 1. **Accede a la aplicación**: http://127.0.0.1:8000/
 2. **Regístrate** o inicia sesión
 3. **Gestiona tus tareas**:
-   - Crear nuevas tareas con descripción y fecha de fin
-   - Marcarlas como completadas/pendientes
-   - Filtrar por estado (Todas/Pendientes/Completadas)
-   - Editar y eliminar tareas
+   - Crear nuevas categorías añadiendo el nombre
+   - Seleccionar una categoría creada y crear nuevas tareas con descripción y fecha de fin
+   - Filtrar las tareas por categoría y por estado (Todas/Pendientes/Completadas/Atrasadas)
+   - Marcar las tareas como completadas/pendientes
+   - Editar y eliminar categorías y tareas
 
 ## Estado
 Proyecto en desarrollo activo. Se aceptan sugerencias y mejoras.

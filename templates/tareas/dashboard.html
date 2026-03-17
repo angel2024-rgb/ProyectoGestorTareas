@@ -4,335 +4,451 @@
   <meta charset="UTF-8">
   <title>Tareas</title>
   <style>
-    /* ── Contenedor principal ── */
-    .tareas-container {
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-      font-family: sans-serif;
-    }
 
-    /* ── Header ── */
-    .app-header {
+    /* ============================================
+   VARIABLES / BASE
+   ============================================ */
+  :root {
+      --blue: #007BFF;
+      --blue-dark: #0056b3;
+      --red: #dc3545;
+      --gray-border: #e0e0e0;
+      --gray-text: #555;
+      --gray-bg: #f4f4f4;
+  }
+
+  body {
+      font-family: Arial, sans-serif;
+      background-color: var(--gray-bg);
+      margin: 0;
+  }
+
+
+  /* ============================================
+    BOTONES (sistema global)
+    ============================================ */
+
+  /* Azul sólido — acción principal */
+  .btn-primary {
+      background-color: var(--blue);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background-color 0.2s;
+  }
+  .btn-primary:hover {
+      background-color: var(--blue-dark);
+  }
+
+  /* Outline azul — acción secundaria */
+  .btn-outline {
+      background-color: white;
+      color: var(--blue);
+      border: 1px solid var(--blue);
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background-color 0.2s, color 0.2s;
+  }
+  .btn-outline:hover {
+      background-color: var(--blue);
+      color: white;
+  }
+
+  /* Outline azul — dentro de cards (editar) */
+  .btn {
+      background: white;
+      color: var(--blue);
+      border: 1px solid var(--blue);
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.2s, color 0.2s;
+  }
+  .btn:hover {
+      background-color: var(--blue);
+      color: white;
+  }
+
+  /* Outline rojo — acción destructiva */
+  .btn-danger {
+      background-color: white;
+      color: var(--red);
+      border: 1px solid var(--red);
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.2s, color 0.2s;
+  }
+  .btn-danger:hover {
+      background-color: var(--red);
+      color: white;
+  }
+
+  /* Modificadores */
+  .btn-sm {
+      padding: 4px 10px;
+      font-size: 11px;
+  }
+  .btn-full {
+      width: 100%;
+      margin-bottom: 16px;
+  }
+
+
+  /* ============================================
+    LAYOUT PRINCIPAL
+    ============================================ */
+  .main-wrapper {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      padding: 20px;
+      min-height: 100vh;
+      box-sizing: border-box;
+  }
+  .app-title #counter:empty {
+      display: none;
+  }
+
+  /* ============================================
+    BLOQUE: CATEGORÍAS
+    ============================================ */
+  .categorias-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: 200px;
+      min-width: 200px;
+  }
+
+  .categorias-container h3 {
+      margin: 0 0 12px;
+      font-size: 15px;
+      color: #333;
+      border-bottom: 2px solid var(--blue);
+      padding-bottom: 8px;
+  }
+
+  .categorias-container ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+  }
+
+  /* Cat card */
+  .cat-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1.5rem;
-    }
+      padding: 8px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--gray-border);
+      gap: 6px;
+      transition: border-color 0.2s, background-color 0.2s;
+  }
+  .cat-card:hover {
+      border-color: var(--blue);
+  }
+  .cat-card.active {
+      border-color: var(--blue);
+      background-color: #f0f7ff;
+  }
+  .cat-card.active .cat-name {
+      color: var(--blue);
+  }
 
-    .app-title {
-      font-size: 22px;
-      font-weight: 500;
+  .cat-name {
       margin: 0;
-    }
-
-    .app-title span {
       font-size: 13px;
-      font-weight: 400;
-      color: #888;
-      margin-left: 8px;
-    }
+      color: #333;
+      font-weight: 600;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+  }
 
-    .header-actions {
+
+  /* ============================================
+    BLOQUE: TAREAS
+    ============================================ */
+  .tareas-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      flex: 1;
+  }
+
+  /* Header */
+  .app-header {
       display: flex;
+      justify-content: space-between;
       align-items: center;
+      margin-bottom: 16px;
+  }
+  .app-title {
+      margin: 0;
+      font-size: 18px;
+      color: #333;
+  }
+  .app-title #counter {
+      background: var(--blue);
+      color: white;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 400;
+  }
+  .header-actions {
+      display: flex;
       gap: 8px;
-    }
+  }
 
-    /* ── Botones del header ── */
-    #openTareaModalBtn {
-      font-size: 13px;
-      padding: 7px 14px;
-      border-radius: 8px;
-      border: none;
-      background: #007BFF;
-      color: #fff;
-      cursor: pointer;
-      font-weight: 500;
-    }
-
-    #openTareaModalBtn:hover {
-      opacity: 0.85;
-    }
-
-    #logoutBtn {
-      font-size: 13px;
-      padding: 7px 14px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      background: transparent;
-      color: #666;
-      cursor: pointer;
-    }
-
-    #logoutBtn:hover {
-      background: #f5f5f5;
-    }
-
-    /* ── Filtros ── */
-    .filter-bar {
+  /* Filter bar */
+  .filter-bar {
       display: flex;
       gap: 6px;
-      margin-bottom: 1rem;
-    }
-
-    .filter-btn {
-      font-size: 12px;
-      padding: 4px 12px;
-      border-radius: 99px;
-      border: 1px solid #ddd;
-      background: transparent;
-      color: #666;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+  }
+  .filter-btn {
+      background-color: white;
+      color: var(--gray-text);
+      border: 1px solid #ccc;
+      padding: 6px 14px;
+      border-radius: 20px;
       cursor: pointer;
-    }
+      font-size: 13px;
+      transition: border-color 0.2s, color 0.2s;
+  }
+  .filter-btn:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+  }
+  .filter-btn.active {
+      background-color: var(--blue);
+      color: white;
+      border-color: var(--blue);
+  }
 
-    .filter-btn.active {
-      background: #111;
-      color: #fff;
-      border-color: transparent;
-    }
-
-    /* ── Lista ── */
-    #listaTareas {
+  /* Lista */
+  #listaTareas {
       list-style: none;
       padding: 0;
       margin: 0;
       display: flex;
       flex-direction: column;
       gap: 8px;
-    }
+  }
 
-    /* ── Tarjeta de tarea ── */
-    .task-card {
-      background: #fff;
-      border: 1px solid #eee;
-      border-radius: 12px;
-      padding: 14px 16px;
-      transition: border-color 0.15s;
-    }
+  /* Task card */
+  .task-card {
+      border: 1px solid var(--gray-border);
+      border-radius: 6px;
+      padding: 12px 14px;
+      transition: border-color 0.2s, background-color 0.2s;
+  }
+  .task-card:hover {
+      border-color: var(--blue);
+  }
+  .task-card.completada {
+      background-color: #f9f9f9;
+      opacity: 0.8;
+  }
+  .task-card.completada .task-desc {
+      text-decoration: line-through;
+      color: #aaa;
+  }
+  .task-card.completada .task-fecha {
+      color: #bbb;
+  }
 
-    .task-card:hover {
-      border-color: #ccc;
-    }
-
-    .task-card.completada {
-      opacity: 0.55;
-    }
-
-    .task-top {
+  .task-top {
       display: flex;
       align-items: flex-start;
       gap: 12px;
-    }
-
-    /* ── Checkbox ── */
-    .task-check {
-      margin-top: 2px;
-      width: 16px;
-      height: 16px;
-      accent-color: #1D9E75;
-      flex-shrink: 0;
+  }
+  .task-check {
+      margin-top: 3px;
+      accent-color: var(--blue);
+      width: 15px;
+      height: 15px;
       cursor: pointer;
-    }
-
-    /* ── Contenido de la tarea ── */
-    .task-body {
+      flex-shrink: 0;
+  }
+  .task-body {
       flex: 1;
       min-width: 0;
-    }
-
-    .task-desc {
+  }
+  .task-desc {
+      margin: 0 0 6px;
       font-size: 14px;
-      font-weight: 500;
-      color: #111;
-      margin: 0 0 4px;
-    }
-
-    .task-card.completada .task-desc {
-      text-decoration: line-through;
-      color: #aaa;
-    }
-
-    .task-meta {
+      color: #333;
+      font-weight: 600;
+  }
+  .task-meta {
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .task-fecha {
+      gap: 10px;
+      flex-wrap: wrap;
+  }
+  .task-fecha {
       font-size: 12px;
       color: #888;
-    }
-
-    .task-badge {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 99px;
-      font-weight: 500;
-    }
-
-    .badge-pendiente {
-      background: #FAEEDA;
-      color: #854F0B;
-    }
-
-    .badge-completada {
-      background: #E1F5EE;
-      color: #0F6E56;
-    }
-
-    /* ── Botones de acción ── */
-    .task-actions {
+  }
+  .task-actions {
       display: flex;
       gap: 6px;
       flex-shrink: 0;
-    }
+  }
 
-    .editarBtn,
-    .eliminarBtn {
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      background: transparent;
-      color: #666;
-      cursor: pointer;
-    }
+  /* Badges */
+  .task-badge {
+      font-size: 11px;
+      padding: 2px 9px;
+      border-radius: 12px;
+      font-weight: 600;
+  }
+  .badge-pendiente {
+      background-color: #fff3cd;
+      color: #856404;
+  }
+  .badge-completada {
+      background-color: #d1f0e0;
+      color: #1a6b3c;
+  }
 
-    .editarBtn:hover {
-      background: #f5f5f5;
-    }
 
-    .eliminarBtn:hover {
-      color: #c0392b;
-      border-color: #f5c6c6;
-      background: #fff5f5;
-    }
-
-    /* Modal */
-    .modal {
+  /* ============================================
+    MODALES
+    ============================================ */
+  .modal {
       display: none;
       position: fixed;
-      z-index: 1;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.5);
-    }
-
-    .modal-content {
-      background-color: #fff;
-      margin: 5% auto;
-      padding: 40px;
-      border-radius: 10px;
-      width: 400px;
-      text-align: center;
-      box-shadow: 0px 4px 15px rgba(0,0,0,0.3);
-    }
-
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 24px;
-      font-weight: bold;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.45);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+  }
+  .modal.active {
+      display: flex;
+  }
+  .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      width: 320px;
+      position: relative;
+  }
+  .close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 20px;
       cursor: pointer;
-    }
-
-    .close:hover {
-      color: #000;
-    }
-
-    h3 {
-      margin-bottom: 20px;
-    }
-
-    input {
-      width: 90%;
-      padding: 12px;
-      margin: 10px 0;
+      color: var(--gray-text);
+      line-height: 1;
+  }
+  .close:hover {
+      color: var(--blue);
+  }
+  .modal-content h3 {
+      text-align: center;
+      margin: 0 0 20px;
+      font-size: 18px;
+      color: #333;
+  }
+  .form-group {
+      margin-bottom: 14px;
+  }
+  .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-text);
+      margin-bottom: 5px;
+  }
+  .form-input {
+      width: 100%;
+      padding: 9px 10px;
       border: 1px solid #ccc;
-      border-radius: 6px;
+      border-radius: 4px;
       font-size: 14px;
-    }
-
-    button {
-      background-color: #007BFF;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s;
+  }
+  .form-input:focus {
+      border-color: var(--blue);
+  }
+  .modal-content button[type="submit"] {
+      display: block;
+      margin: 20px auto 0;
+      background-color: var(--blue);
       color: white;
       border: none;
-      padding: 12px 20px;
-      border-radius: 6px;
+      padding: 10px 28px;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 16px;
-      margin-top: 15px;
-    }
-
-    button:hover {
-      background-color: #218838;
-    }
-
-    .main-wrapper {
-      display: flex;        /* activa el layout en paralelo */
-      gap: 20px;            /* espacio entre los contenedores */
-    }
-
-    .categorias-container {
-      flex: 1;              /* ocupa menos espacio */
-      border: 1px solid #ccc;
-      padding: 10px;
-    }
-
-    .tareas-container {
-      flex: 3;              /* ocupa más espacio */
-      border: 1px solid #ccc;
-      padding: 10px;
-    }
-
-    .cat-card {
-      border: 1px solid #ccc;
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 6px;
-      cursor: pointer;              /* cambia el cursor */
-      transition: background 0.2s;  /* efecto suave */
-    }
-
-    .cat-card:hover {
-      background-color: #f0f0f0;    /* efecto hover */
-    }
+      font-size: 14px;
+      transition: background-color 0.2s;
+  }
+  .modal-content button[type="submit"]:hover {
+      background-color: var(--blue-dark);
+  }
+  .error {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--red);
+      text-align: center;
+      min-height: 18px;
+  }
   </style>
 </head>
 <body>
 
-
   <div class="main-wrapper">
 
-    <!-- BLOQUE DE CATEGORIAS -->
-    <div class="categorias-container">
-      <button id="openCategoriaModalBtn" type="button">+ Nueva categoría</button>
-      <h3>Categorías</h3>
-      <input type="hidden" id="listaCategoriasId">
-      <ul id="listaCategorias"></ul>
-    </div>
+      <!-- BLOQUE DE CATEGORIAS -->
+      <div class="categorias-container">
+        <button id="openCategoriaModalBtn" class="btn-primary btn-full" type="button">+ Nueva categoría</button>
+        <h3>Categorías</h3>
+        <input type="hidden" id="listaCategoriasId">
+        <ul id="listaCategorias"></ul>
+      </div>
 
-    <!-- BLOQUE DE TAREAS -->
-    <div class="tareas-container">
-      <div class="app-header">
-        <h2 class="app-title">Mis tareas <span id="counter"></span></h2>
-        <div class="header-actions">
-          <button id="openTareaModalBtn" type="button">+ Nueva tarea</button>
-          <button id="logoutBtn" type="button">Salir</button>
+      <!-- BLOQUE DE TAREAS -->
+      <div class="tareas-container">
+        <div class="app-header">
+          <h2 class="app-title">Mis tareas<span id="counter"></span></h2>
+          <div class="header-actions">
+            <button id="openTareaModalBtn" class="btn-primary" type="button">+ Nueva tarea</button>
+            <button id="logoutBtn" class="btn-outline" type="button">Salir</button>
+          </div>
         </div>
-      </div>
-    
-      <div class="filter-bar">
-        <button class="filter-btn">Todas</button>
-        <button class="filter-btn">Pendientes</button>
-        <button class="filter-btn">Completadas</button>
-        <button class="filter-btn">Atrasadas</button>
-      </div>
-      <input type="hidden" id="listaTareasId" value="todas">
+      
+        <div class="filter-bar">
+          <button class="filter-btn active">Todas</button>
+          <button class="filter-btn">Pendientes</button>
+          <button class="filter-btn">Completadas</button>
+          <button class="filter-btn">Atrasadas</button>
+        </div>
+        <input type="hidden" id="listaTareasId" value="todas">
 
-      <ul id="listaTareas"></ul>       
-    </div>
+        <ul id="listaTareas"></ul>       
+      </div>
 
   </div>
   
@@ -348,7 +464,7 @@
 
         <div class="form-group">
           <label class="form-label">Descripción</label>
-          <input type="text" class="form-input" id="descripcionId" name="descripcion" placeholder="¿Qué hay que hacer?" required>
+          <input type="text" class="form-input" id="descripcionId" name="descripcion" placeholder="Nueva tarea" required>
         </div>
         <div class="form-group">
           <label class="form-label">Fecha de fin</label>
@@ -455,11 +571,25 @@
               `;
 
               li.querySelector(".cat-card").addEventListener("click", async () => {
+                document.querySelectorAll(".cat-card").forEach(c => c.classList.remove("active"));
+                document.getElementById(`cat-${categoria.id}`).classList.add("active");
+
+                const botones = document.querySelectorAll(".filter-btn");
+                botones.forEach(b => b.classList.remove("active"));
+
+                const botonTodas = document.querySelector(".filter-btn:first-child");
+                botonTodas.classList.add("active");
+
                 await cargarTareas('todas', categoria.id);
               });
 
               lista.appendChild(li);
             });
+
+            let catId  = document.getElementById("categoriaId").value
+            if (catId){
+              document.getElementById(`cat-${catId}`).classList.add("active");
+            }
             
         } catch (error) {
             console.error("Error al cargar categorias:", error);
@@ -470,6 +600,10 @@
     async function cargarTareas(listaTareasId, listaCategoriasId) {
         document.getElementById("listaTareasId").value  = listaTareasId
         document.getElementById("listaCategoriasId").value  = listaCategoriasId
+
+        if (!listaCategoriasId){
+          return;
+        }
 
         try {
             const res = await api.get(`/tareas/?status=${listaTareasId}&categoria=${listaCategoriasId}`);
@@ -500,14 +634,13 @@
                         </div>
                       </div>
                       <div class="task-actions">
-                        <button class="btn" onclick="editarTarea(${tarea.id})">Editar</button>
-                        <button class="btn btn-danger" onclick="eliminarTarea(${tarea.id})">✕</button>
+                        <button class="btn-outline btn-sm" onclick="editarTarea(${tarea.id})">Editar</button>
+                        <button class="btn-danger btn-sm" onclick="eliminarTarea(${tarea.id})">✕</button>
                       </div>
                     </div>
                   </div>
                 `;
                   
-
                 lista.appendChild(li);
             });
             
@@ -517,7 +650,7 @@
     }
 
 
-    // AÑADIR EDITAR CATEGORIA 
+    // INTERACCIÓN MODAL CATEGORÍA
     const catModal = document.getElementById("categoriaModal");
     const openCatBtn = document.getElementById("openCategoriaModalBtn");
     const closeCatBtn = document.getElementById("closeCategoriaModalBtn");
@@ -526,7 +659,8 @@
       categoriaForm.reset();
       document.getElementById("categoriaId").value = "";
       document.getElementById("catModalTitulo").textContent = "Añadir categoría";
-      catModal.style.display = "block";
+      document.getElementById("añadirCategoríaBtn").textContent = "Añadir";
+      catModal.style.display = "flex";
     }
 
     closeCatBtn.onclick = function() {
@@ -539,6 +673,7 @@
       }
     }
 
+    // AÑADIR EDITAR CATEGORIA
     const catMsgBox = document.getElementById("catMsgBox");
     document.getElementById("categoriaForm").addEventListener("submit", async function(e) {
         e.preventDefault();
@@ -588,6 +723,10 @@
             categoriaForm.reset();
             catModal.style.display = "none";
 
+            let listaTareas = document.getElementById("listaTareas");
+            listaTareas.innerHTML = "";
+            document.getElementById("listaCategoriasId").value = ""
+
           } catch (error) {
               if (error.response) {
                   const data = error.response.data;
@@ -610,7 +749,7 @@
         
     });
 
-    // AÑADIR EDITAR TAREA 
+    // INTERACCIÓN MODAL TAREA
     const modal = document.getElementById("tareaModal");
     const openBtn = document.getElementById("openTareaModalBtn");
     const closeBtn = document.getElementById("closeTareaModalBtn");
@@ -619,14 +758,15 @@
       categoria = document.getElementById('listaCategoriasId').value;
 
       if (!categoria){
-        alert("Escoja una categoría");
+        alert("Por favor, escoja una categoría antes de crear una tarea.");
         return;
       }
 
       tareaForm.reset();
       document.getElementById("tareaId").value = "";
       document.getElementById("modalTitulo").textContent = "Añadir tarea";
-      modal.style.display = "block";
+      document.getElementById("añadirTareaBtn").textContent = "Añadir";
+      modal.style.display = "flex";
     }
 
     closeBtn.onclick = function() {
@@ -639,6 +779,7 @@
       }
     }
 
+    // AÑADIR EDITAR TAREA 
     const msgBox = document.getElementById("msgBox");
     document.getElementById("tareaForm").addEventListener("submit", async function(e) {
         e.preventDefault();
@@ -757,8 +898,9 @@
     async function editarTarea(tareaId) {
       tareaForm.reset();
       document.getElementById("modalTitulo").textContent = "Editar tarea";
+      document.getElementById("añadirTareaBtn").textContent = "Editar";
       document.getElementById("tareaId").value = tareaId;
-      modal.style.display = "block";
+      modal.style.display = "flex";
 
       try {
         const res = await api.get(`/tareas/${tareaId}/`);
@@ -782,7 +924,9 @@
         try {
             const response = await api.delete(`/categorias/${categoriaId}/`);
             await cargarCategorias();
-            await cargarTareas('todas', "");
+            let listaTareas = document.getElementById("listaTareas");
+            listaTareas.innerHTML = "";
+            document.getElementById("listaCategoriasId").value = ""
         } catch (error) {
             console.error("Error al eliminar categoría:", error);
         }
@@ -792,8 +936,9 @@
     async function editarCategoria(categoriaId) {
       categoriaForm.reset();
       document.getElementById("catModalTitulo").textContent = "Editar categoría";
+      document.getElementById("añadirCategoríaBtn").textContent = "Editar";
       document.getElementById("categoriaId").value = categoriaId;
-      catModal.style.display = "block";
+      catModal.style.display = "flex";
 
       try {
         const res = await api.get(`/categorias/${categoriaId}/`);
@@ -820,22 +965,21 @@
 
     botones.forEach(boton => {
       boton.addEventListener("click", () => {
+        
         botones.forEach(b => b.classList.remove("active"));
         boton.classList.add("active");
 
         const estado = boton.textContent.toLowerCase();
         listaCategoriasId = document.getElementById("listaCategoriasId").value 
         cargarTareas(estado, listaCategoriasId);
+
       });
     });
 
-    // SE MARCA EL BOTÓN TODAS Y SE CARGAN LAS TAREAS AL INICIAR
+    // AL INICIAR EL PROGRAMA, TODOS LOS FILTROS ESTÁN DESMARCADOS
     window.addEventListener("DOMContentLoaded", () => {
-      const botonTodas = document.querySelector(".filter-btn:first-child");
-
-      botonTodas.classList.add("active");
- 
-      cargarTareas('todas', "");
+      const botones = document.querySelectorAll(".filter-btn");
+      botones.forEach(b => b.classList.remove("active"));
     });
 
     cargarCategorias();
