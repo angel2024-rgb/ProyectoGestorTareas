@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Tareas con modal</title>
+  <title>Tareas</title>
   <style>
     /* ── Contenedor principal ── */
     .tareas-container {
@@ -269,31 +269,73 @@
       background-color: #218838;
     }
 
+    .main-wrapper {
+      display: flex;        /* activa el layout en paralelo */
+      gap: 20px;            /* espacio entre los contenedores */
+    }
+
+    .categorias-container {
+      flex: 1;              /* ocupa menos espacio */
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+
+    .tareas-container {
+      flex: 3;              /* ocupa más espacio */
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+
+    .cat-card {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 6px;
+      cursor: pointer;              /* cambia el cursor */
+      transition: background 0.2s;  /* efecto suave */
+    }
+
+    .cat-card:hover {
+      background-color: #f0f0f0;    /* efecto hover */
+    }
   </style>
 </head>
 <body>
 
 
-  <!-- BLOQUE DE TAREAS -->
-  <div class="tareas-container">
-    <div class="app-header">
-      <h2 class="app-title">Mis tareas <span id="counter"></span></h2>
-      <div class="header-actions">
-        <button id="openTareaModalBtn" type="button">+ Nueva tarea</button>
-        <button id="logoutBtn" type="button">Salir</button>
-      </div>
-    </div>
-  
-    <div class="filter-bar">
-      <button class="filter-btn">Todas</button>
-      <button class="filter-btn">Pendientes</button>
-      <button class="filter-btn">Completadas</button>
-      <button class="filter-btn">Atrasadas</button>
-    </div>
-    <input type="hidden" id="listaTareasId" value="todas">
+  <div class="main-wrapper">
 
-    <ul id="listaTareas"></ul>
+    <!-- BLOQUE DE CATEGORIAS -->
+    <div class="categorias-container">
+      <button id="openCategoriaModalBtn" type="button">+ Nueva categoría</button>
+      <h3>Categorías</h3>
+      <input type="hidden" id="listaCategoriasId">
+      <ul id="listaCategorias"></ul>
+    </div>
+
+    <!-- BLOQUE DE TAREAS -->
+    <div class="tareas-container">
+      <div class="app-header">
+        <h2 class="app-title">Mis tareas <span id="counter"></span></h2>
+        <div class="header-actions">
+          <button id="openTareaModalBtn" type="button">+ Nueva tarea</button>
+          <button id="logoutBtn" type="button">Salir</button>
+        </div>
+      </div>
+    
+      <div class="filter-bar">
+        <button class="filter-btn">Todas</button>
+        <button class="filter-btn">Pendientes</button>
+        <button class="filter-btn">Completadas</button>
+        <button class="filter-btn">Atrasadas</button>
+      </div>
+      <input type="hidden" id="listaTareasId" value="todas">
+
+      <ul id="listaTareas"></ul>       
+    </div>
+
   </div>
+  
 
 
   <!-- MODAL AÑADIR EDITAR TAREA -->
@@ -319,12 +361,32 @@
     </div>
   </div>
 
+  <!-- MODAL AÑADIR EDITAR CATEGORIA -->
+  <div id="categoriaModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeCategoriaModalBtn">&times;</span>
+      <h3 id="catModalTitulo"></h3>
+      <form id="categoriaForm">
+        <input type="hidden" id="categoriaId" name="categoria">
+
+        <div class="form-group">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-input" id="nombreId" name="nombre" placeholder="Nombre de categoría" required>
+        </div>
+
+        <button type="submit" id="añadirCategoríaBtn">Añadir</button>
+      </form>
+      <div id="catMsgBox" class="error"></div>
+    </div>
+  </div>
+
   
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <script>
 
     let listaTareasId = document.getElementById("listaTareasId").value
+    let listaCategoriasId = document.getElementById("listaCategoriasId").value
 
     // AXIOS
     const api = axios.create({
@@ -370,12 +432,47 @@
     }
     );
 
-    // CARGAR TAREAS
-    async function cargarTareas(listaTareasId) {
-        document.getElementById("listaTareasId").value  = listaTareasId
+
+    // CARGAR CATEGORIAS
+    async function cargarCategorias() {
 
         try {
-            const res = await api.get(`/tareas/?status=${listaTareasId}`);
+            const res = await api.get(`/categorias/`);
+            const categorias = res.data;
+
+            const lista = document.getElementById("listaCategorias");
+            lista.innerHTML = "";
+
+            categorias.forEach(categoria => {
+              const li = document.createElement("li");
+
+              li.innerHTML = `
+                <div class="cat-card" id="cat-${categoria.id}">
+                  <p class="cat-name">${categoria.nombre}</p>
+                  <button class="btn" onclick="editarCategoria(${categoria.id})">Editar</button>
+                  <button class="btn btn-danger" onclick="eliminarCategoria(${categoria.id})">✕</button>
+                </div>
+              `;
+
+              li.querySelector(".cat-card").addEventListener("click", async () => {
+                await cargarTareas('todas', categoria.id);
+              });
+
+              lista.appendChild(li);
+            });
+            
+        } catch (error) {
+            console.error("Error al cargar categorias:", error);
+        }
+    }
+
+    // CARGAR TAREAS
+    async function cargarTareas(listaTareasId, listaCategoriasId) {
+        document.getElementById("listaTareasId").value  = listaTareasId
+        document.getElementById("listaCategoriasId").value  = listaCategoriasId
+
+        try {
+            const res = await api.get(`/tareas/?status=${listaTareasId}&categoria=${listaCategoriasId}`);
             const tareas = res.data;
 
             const lista = document.getElementById("listaTareas");
@@ -419,12 +516,113 @@
         }
     }
 
+
+    // AÑADIR EDITAR CATEGORIA 
+    const catModal = document.getElementById("categoriaModal");
+    const openCatBtn = document.getElementById("openCategoriaModalBtn");
+    const closeCatBtn = document.getElementById("closeCategoriaModalBtn");
+
+    openCatBtn.onclick = function() {
+      categoriaForm.reset();
+      document.getElementById("categoriaId").value = "";
+      document.getElementById("catModalTitulo").textContent = "Añadir categoría";
+      catModal.style.display = "block";
+    }
+
+    closeCatBtn.onclick = function() {
+      catModal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        catModal.style.display = "none";
+      }
+    }
+
+    const catMsgBox = document.getElementById("catMsgBox");
+    document.getElementById("categoriaForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        
+        Id = document.getElementById("categoriaId").value
+        const nombre = document.getElementById('nombreId').value.trim();
+        catMsgBox.textContent = "";
+
+        let nuevaCategoria = {
+            nombre: nombre
+        };
+
+        // EDITAR
+        if(Id){
+
+          try {
+            const response = await api.patch(`/categorias/${Id}/`, nuevaCategoria);
+            await cargarCategorias();
+            categoriaForm.reset();
+            catModal.style.display = "none";
+
+          } catch (error) {
+              if (error.response) {
+                  const data = error.response.data;
+                  let mensajes = [];
+                  for (const campo in data) {
+                      if (Array.isArray(data[campo])) {
+                          const texto = data[campo].join(", ");
+                          mensajes.push(texto);
+                      }
+                  }
+                  catMsgBox.textContent = `${mensajes.join(" | ")}`;
+              } else if (error.request) {
+                  catMsgBox.textContent = "No se recibió respuesta del servidor.";
+              } else {
+                  catMsgBox.textContent = "Error al preparar la petición.";
+              }
+          }
+
+        }
+        // AÑADIR
+        else{
+
+          try {
+            const response = await api.post("/categorias/", nuevaCategoria); 
+            await cargarCategorias();
+            categoriaForm.reset();
+            catModal.style.display = "none";
+
+          } catch (error) {
+              if (error.response) {
+                  const data = error.response.data;
+                  let mensajes = [];
+                  for (const campo in data) {
+                      if (Array.isArray(data[campo])) {
+                          const texto = data[campo].join(", ");
+                          mensajes.push(texto);
+                      }
+                  }
+                  catMsgBox.textContent = `${mensajes.join(" | ")}`;
+              } else if (error.request) {
+                  catMsgBox.textContent = "No se recibió respuesta del servidor.";
+              } else {
+                  catMsgBox.textContent = "Error al preparar la petición.";
+              }
+          }
+        }
+ 
+        
+    });
+
     // AÑADIR EDITAR TAREA 
     const modal = document.getElementById("tareaModal");
     const openBtn = document.getElementById("openTareaModalBtn");
     const closeBtn = document.getElementById("closeTareaModalBtn");
 
     openBtn.onclick = function() {
+      categoria = document.getElementById('listaCategoriasId').value;
+
+      if (!categoria){
+        alert("Escoja una categoría");
+        return;
+      }
+
       tareaForm.reset();
       document.getElementById("tareaId").value = "";
       document.getElementById("modalTitulo").textContent = "Añadir tarea";
@@ -448,11 +646,13 @@
         Id = document.getElementById("tareaId").value
         const descripcion = document.getElementById('descripcionId').value.trim();
         const fecha_fin = document.getElementById('fechaFinId').value;
+        const categoriaId = document.getElementById('listaCategoriasId').value;
         msgBox.textContent = "";
 
 
         let nuevaTarea = {
-            descripcion: descripcion
+            descripcion: descripcion,
+            categoria: categoriaId
         };
 
         // EDITAR
@@ -465,7 +665,8 @@
           try {
             const response = await api.patch(`/tareas/${Id}/`, nuevaTarea);
             listaTareasId = document.getElementById("listaTareasId").value
-            await cargarTareas(listaTareasId);
+            listaCategoriasId = document.getElementById("listaCategoriasId").value
+            await cargarTareas(listaTareasId, listaCategoriasId);
             tareaForm.reset();
             modal.style.display = "none";
 
@@ -495,8 +696,9 @@
 
           try {
             const response = await api.post("/tareas/", nuevaTarea);
-            listaTareasId = document.getElementById("listaTareasId").value  
-            await cargarTareas(listaTareasId);
+            listaTareasId = document.getElementById("listaTareasId").value
+            listaCategoriasId = document.getElementById("listaCategoriasId").value  
+            await cargarTareas(listaTareasId, listaCategoriasId);
             tareaForm.reset();
             modal.style.display = "none";
 
@@ -527,7 +729,8 @@
         try {
             const response = await api.patch(`/tareas/${tareaId}/`, { status: estadoActual });
             listaTareasId = document.getElementById("listaTareasId").value
-            await cargarTareas(listaTareasId);
+            listaCategoriasId = document.getElementById("listaCategoriasId").value
+            await cargarTareas(listaTareasId, listaCategoriasId);
         } catch (error) {
             console.error("Error al actualizar estado:", error);
         }
@@ -543,7 +746,8 @@
         try {
             const response = await api.delete(`/tareas/${tareaId}/`);
             listaTareasId = document.getElementById("listaTareasId").value
-            await cargarTareas(listaTareasId);
+            listaCategoriasId = document.getElementById("listaCategoriasId").value
+            await cargarTareas(listaTareasId, listaCategoriasId);
         } catch (error) {
             console.error("Error al eliminar tarea:", error);
         }
@@ -564,7 +768,41 @@
         document.getElementById("fechaFinId").value = tarea.fecha_fin;
         
       } catch (error) {
-        console.error("Error al cargar tarea:", error);
+        console.error("Error al editar tarea:", error);
+      }
+    }
+
+    // ELIMINAR CATEGORIA
+    async function eliminarCategoria(categoriaId) {
+        const confirmar = window.confirm("¿Estás seguro de que quieres eliminar esta categoría?");
+        if (!confirmar) {
+          return;
+        }
+
+        try {
+            const response = await api.delete(`/categorias/${categoriaId}/`);
+            await cargarCategorias();
+            await cargarTareas('todas', "");
+        } catch (error) {
+            console.error("Error al eliminar categoría:", error);
+        }
+    }
+
+    // EDITAR CATEGORIA
+    async function editarCategoria(categoriaId) {
+      categoriaForm.reset();
+      document.getElementById("catModalTitulo").textContent = "Editar categoría";
+      document.getElementById("categoriaId").value = categoriaId;
+      catModal.style.display = "block";
+
+      try {
+        const res = await api.get(`/categorias/${categoriaId}/`);
+        const categoria = res.data;   
+
+        document.getElementById("nombreId").value = categoria.nombre;
+        
+      } catch (error) {
+        console.error("Error al editar categoria:", error);
       }
     }
 
@@ -585,8 +823,9 @@
         botones.forEach(b => b.classList.remove("active"));
         boton.classList.add("active");
 
-        const estado = boton.textContent.toLowerCase(); 
-        cargarTareas(estado);
+        const estado = boton.textContent.toLowerCase();
+        listaCategoriasId = document.getElementById("listaCategoriasId").value 
+        cargarTareas(estado, listaCategoriasId);
       });
     });
 
@@ -595,10 +834,11 @@
       const botonTodas = document.querySelector(".filter-btn:first-child");
 
       botonTodas.classList.add("active");
-
-      cargarTareas('todas');
+ 
+      cargarTareas('todas', "");
     });
 
+    cargarCategorias();
   </script>
 
 </body>

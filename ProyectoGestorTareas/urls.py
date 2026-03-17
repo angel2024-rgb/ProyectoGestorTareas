@@ -22,6 +22,7 @@ from tareas import views as frontend_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('tareas.urls')),
+    path('api/', include('categorías.urls')),
 
     # JWT endpoints
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

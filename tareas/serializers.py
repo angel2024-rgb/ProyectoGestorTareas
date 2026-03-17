@@ -60,4 +60,3 @@ class TareaSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Fecha de fin incorrecta")
         return data
         
-    

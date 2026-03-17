@@ -14,6 +14,8 @@ class TareaView(APIView):
 
     def get(self, request, *args, **kwargs):
         tareas = Tarea.objects.filter(usuario=request.user)
+
+        # filtro por status
         filtro_status = request.query_params.get('status')
 
         if filtro_status == 'todas': 
@@ -24,6 +26,12 @@ class TareaView(APIView):
             tareas = tareas.filter(status=True)
         elif filtro_status == 'atrasadas':
             tareas = tareas.filter(status=False, fecha_fin__lt=timezone.now())
+
+        #filtro por categoría
+        filtro_categoria = request.query_params.get('categoria')
+
+        if filtro_categoria:
+            tareas = tareas.filter(categoria__id = filtro_categoria)
 
         serializer = TareaSerializer(tareas, many = True)
         return Response(serializer.data, status=status.HTTP_200_OK)
