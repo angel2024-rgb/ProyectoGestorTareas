@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'tareas',
     'categorías',
+    'noticias',
+    'clima',
 ]
 
 MIDDLEWARE = [
@@ -138,3 +140,11 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+import environ
+import os
+
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
+APITUBE_API_KEY = env("APITUBE_API_KEY")
