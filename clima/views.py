@@ -29,8 +29,8 @@ class ClimaView(APIView):
             ultima_temperatura = data["hourly"]["temperature_2m"][-1]
             hora = data["hourly"]["time"][-1]
             resultado = {
-                "temperatura": ultima_temperatura,
-                "hora": hora
+                "hora": hora,
+                "temperatura": ultima_temperatura
             }
             return Response(resultado)
         else:

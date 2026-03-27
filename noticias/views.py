@@ -9,11 +9,10 @@ class NoticiasView(APIView):
 
     def get(self, request):
         api_key = settings.APITUBE_API_KEY
-        category = request.query_params.get("category.id", "medtop:13000000")
         location = request.query_params.get("location.name", "Lima")
 
         url = "https://api.apitube.io/v1/news/everything"
-        params = {"category.id": category, "location.name": location, "api_key": api_key}
+        params = {"location.name": location, "api_key": api_key}
         response = requests.get(url, params=params)
 
         if response.status_code == 200:
