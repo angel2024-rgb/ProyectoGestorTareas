@@ -1,10 +1,10 @@
-# Gestor de Tareas Personales
+# Portal Informativo con Gestor de Tareas
 
-Una aplicación para gestionar tareas personales, construida con Django REST Framework y JWT para autenticación.
+Una aplicación que combina gestión de tareas personales con información en tiempo real de clima y noticias de Lima, construida con Django REST Framework y JWT para autenticación.
 
 ## Demo
 
-### Pantalla de Login
+### Pantalla de Login con Clima y Noticias
 ![Login](screenshots/login.png)
 
 ### Registro
@@ -22,6 +22,8 @@ Una aplicación para gestionar tareas personales, construida con Django REST Fra
 
 ## Características
 
+-  **Clima en tiempo real**: muestra la temperatura actual en Lima (API externa).
+-  **Lista dinámica de noticias**: lista de titulares, fechas y descripciones con scroll.
 -  **CRUD completo** de tareas y categorías (Crear, Leer, Actualizar, Eliminar)
 -  **Autenticación JWT** (Access y Refresh tokens)
 -  **Filtros** por estado de tarea (Todas/Pendientes/Completadas/Atrasadas) y por categoría
@@ -45,6 +47,20 @@ Una aplicación para gestionar tareas personales, construida con Django REST Fra
 ## Dependencias
 - Python: ver `requirements.txt`
 - JavaScript: Axios (si se usa npm, ver `package.json`)
+
+## Fuentes de datos / APIs externas
+
+La aplicación consume información en tiempo real desde:
+
+- **Clima**: API de [Open-Meteo](https://open-meteo.com/) para obtener la temperatura actual en Lima.
+- **Noticias**: API gratuita de [NewsAPI](https://newsapi.org/) (versión limitada) para mostrar titulares y descripciones de Lima, recientes.
+  ⚠️ **Nota**: Para usar esta funcionalidad (noticias) necesitas tu propio `API key`.  
+  - Regístrate en [NewsAPI](https://newsapi.org/register).  
+  - Obtén tu `API key`.  
+  - Crea un archivo `.env` en la raíz del proyecto y define la variable de entorno:
+      APITUBE_API_KEY="tu_api_key"
+  - Luego asegúrate de que tu aplicación lea esta variable desde el entorno.  
+
 
 ## Instalación
 
@@ -84,12 +100,10 @@ python manage.py runserver
 
 1. **Accede a la aplicación**: http://127.0.0.1:8000/
 2. **Regístrate** o inicia sesión
-3. **Gestiona tus tareas**:
-   - Crear nuevas categorías añadiendo el nombre
-   - Seleccionar una categoría creada y crear nuevas tareas con descripción y fecha de fin
-   - Filtrar las tareas por categoría y por estado (Todas/Pendientes/Completadas/Atrasadas)
-   - Marcar las tareas como completadas/pendientes
-   - Editar y eliminar categorías y tareas
+3. **Explora el portal**:
+   - Visualiza la temperatura actual.
+   - Consulta las noticias recientes con el scroll.
+   - Gestiona tus tareas: crear categorías, añadir tareas, filtrar por estado y categoría, editar y eliminar.
 
 ## Estado
 Proyecto en desarrollo activo. Se aceptan sugerencias y mejoras.
