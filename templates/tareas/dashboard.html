@@ -349,7 +349,9 @@
       padding: 30px;
       border-radius: 8px;
       box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-      width: 320px;
+      width: 600px;
+      max-height: 80vh;
+      overflow-y: auto; 
       position: relative;
   }
   .close {
@@ -372,6 +374,7 @@
   }
   .form-group {
       margin-bottom: 14px;
+      margin-top: 25px;
   }
   .form-label {
       display: block;
@@ -415,6 +418,44 @@
       text-align: center;
       min-height: 18px;
   }
+
+  /* MODAL IA*/
+    #listaSubtareasId {
+    max-height: 200px;   
+    overflow-y: auto;    /* activa scroll vertical */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fafafa;
+    }
+    .modal-content button[type="button"] {
+      display: block;
+      margin: 20px auto 0;
+      background-color: var(--blue);
+      color: white;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    .modal-content button[type="button"]:hover {
+        background-color: var(--blue-dark);
+    }
+    #url_fuente {
+    width: 95%;          
+    max-width: 600px;     
+    padding: 10px;        
+    font-size: 14px;      
+    border: 1px solid #ccc; 
+    border-radius: 5px;   
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); 
+    }
+    .subtareas-group {
+    margin-top: 40px;
+    }
+
   </style>
 </head>
 <body>
@@ -496,6 +537,38 @@
     </div>
   </div>
 
+  <!-- MODAL OBTENER LISTA DE SUBTAREAS CON IA -->
+  <div id="resSubIAModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeResSubIAModalBtn">&times;</span>
+      <h3 id="resSubIAModalTitulo"></h3>
+      <form id="resSubIAForm">
+        <input type="hidden" id="tareaIAId" name="tarea">
+
+        <!-- Nuevo campo para URL -->
+        <div class="form-group">
+            <label class="form-label" for="url_fuente">Fuente URL (opcional)</label>
+            <input type="url" id="url_fuente" name="url_fuente"
+                placeholder="https://ejemplo.com/articulo"
+                class="form-control">
+        </div>
+
+        <!-- Botón para ejecutar PATCH -->
+        <div class="form-group">
+            <button type="button" id="generarSubtareasBtn" class="btn btn-primary">
+            Generar nuevas subtareas
+            </button>
+        </div>
+
+        <div class="form-group subtareas-group">
+            <label class="form-label">Lista de subtareas sugeridas</label>
+            <pre id="listaSubtareasId"></pre>
+        </div>
+
+      </form>
+      <div id="resSubIAMsgBox" class="error"></div>
+    </div>
+  </div>
   
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
@@ -636,6 +709,7 @@
                       <div class="task-actions">
                         <button class="btn-outline btn-sm" onclick="editarTarea(${tarea.id})">Editar</button>
                         <button class="btn-danger btn-sm" onclick="eliminarTarea(${tarea.id})">✕</button>
+                        <button class="btn-outline btn-sm" onclick="iaTarea(${tarea.id})">IA</button>
                       </div>
                     </div>
                   </div>
@@ -749,7 +823,7 @@
         
     });
 
-    // INTERACCIÓN MODAL TAREA
+    // INTERACCIÓN MODAL TAREA 
     const modal = document.getElementById("tareaModal");
     const openBtn = document.getElementById("openTareaModalBtn");
     const closeBtn = document.getElementById("closeTareaModalBtn");
@@ -865,6 +939,39 @@
         
     });
 
+    // INTERACCIÓN MODAL resSubIA
+    const resSubIAModal = document.getElementById("resSubIAModal");
+    const closeResSubIAModalBtn = document.getElementById("closeResSubIAModalBtn");
+
+
+    closeResSubIAModalBtn.onclick = function() {
+        resSubIAModal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == resSubIAModal) {
+        resSubIAModal.style.display = "none";
+      }
+    }
+
+    document.getElementById("generarSubtareasBtn").addEventListener("click", async () => {
+    const tareaId = document.getElementById("tareaIAId").value;
+    const url = document.getElementById("url_fuente").value;
+
+        try {
+            const res = await api.patch(`/IA/${tareaId}/`, {
+                url: url
+            });
+
+            // Mostrar subtareas devueltas por el backend
+            document.getElementById("listaSubtareasId").textContent = res.data.subtareas_ia;
+        } catch (err) {
+            document.getElementById("resSubIAMsgBox").textContent = "Error al generar subtareas.";
+        }
+
+    });
+
+
     // CAMBIAR ESTADO TAREA (PENDIENTE, TERMINADA)
     async function cambiarEstadoTarea(tareaId, estadoActual) {
         try {
@@ -910,8 +1017,29 @@
         document.getElementById("fechaFinId").value = tarea.fecha_fin;
         
       } catch (error) {
-        console.error("Error al editar tarea:", error);
+        console.error("Error al obtener datos de la tarea:", error);
       }
+    }
+
+    // IA TAREA (obtener la lista de tareas usando LLM)
+    async function iaTarea(tareaId) {
+      resSubIAForm.reset();
+      resSubIAModal.style.display = "flex";
+      document.getElementById("listaSubtareasId").textContent = "";
+      document.getElementById("resSubIAMsgBox").textContent = "";
+      
+      document.getElementById("tareaIAId").value = tareaId;
+
+      try {
+        const res = await api.get(`/tareas/${tareaId}/`);
+        const tarea = res.data;   
+        document.getElementById("resSubIAModalTitulo").innerText = "Tarea: " + tarea.descripcion;
+        document.getElementById("listaSubtareasId").textContent = tarea.subtareas_ia;
+        
+      } catch (error) {
+        console.error("Error la descripción de la tarea:", error);
+      }
+      
     }
 
     // ELIMINAR CATEGORIA

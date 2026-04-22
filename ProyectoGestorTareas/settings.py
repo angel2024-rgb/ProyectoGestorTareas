@@ -148,3 +148,4 @@ env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 APITUBE_API_KEY = env("APITUBE_API_KEY")
+GEMINI_API_KEY = env("GEMINI_API_KEY")

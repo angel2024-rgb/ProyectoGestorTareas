@@ -7,6 +7,7 @@ from .serializers import TareaSerializer, UsuarioSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from integracion_ia.gemini_cliente import sugerir_subtareas
 
 
 class TareaView(APIView):
@@ -90,6 +91,22 @@ class UsuarioView(APIView):
         serializer = UsuarioSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+
+class IAView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        tarea = get_object_or_404(Tarea, pk=pk, usuario=request.user)
+
+        url = request.data.get("url")
+        tarea.subtareas_ia = sugerir_subtareas(
+            descripcion_tarea=tarea.descripcion,
+            url=url
+        )
+        tarea.save()
+
+        serializer = TareaSerializer(tarea)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 def login_view(request):

@@ -13,3 +13,6 @@ env/
 
 # Variables de entorno
 .env
+
+# Ignorar datos de ChromaDB
+data/chromadb/
