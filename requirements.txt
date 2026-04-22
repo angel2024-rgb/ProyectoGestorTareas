@@ -7,3 +7,12 @@ sqlparse==0.5.5
 tzdata==2025.3
 django-environ==0.13.0
 requests==2.33.0
+
+Gemini API client 
+langchain
+langchain-community
+chromadb
+sentence-transformers
+requests
+beautifulsoup4
+lxml

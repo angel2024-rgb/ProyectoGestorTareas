@@ -10,8 +10,7 @@ class Tarea(models.Model):
     fecha_fin = models.DateField(blank=True, null=True)
     status = models.BooleanField(default=False) 
     
-    # Campos para IA
-    resumen_ia = models.TextField(null=True, blank=True)
+    # Campo para IA
     subtareas_ia = models.JSONField(null=True, blank=True)
 
 

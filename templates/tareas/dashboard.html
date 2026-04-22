@@ -419,14 +419,8 @@
   }
 
   /* MODAL IA*/
-    #resumenId {
-    width: 100%;
-    min-height: 100px;
-    resize: vertical; /* permite ajustar altura */
-    }
-
     #listaSubtareasId {
-    max-height: 200px;   /* altura máxima visible */
+    max-height: 200px;   
     overflow-y: auto;    /* activa scroll vertical */
     padding: 8px;
     border: 1px solid #ccc;
@@ -515,7 +509,7 @@
     </div>
   </div>
 
-  <!-- MODAL OBTENER RESUMEN Y LISTA DE SUBTAREAS CON IA -->
+  <!-- MODAL OBTENER LISTA DE SUBTAREAS CON IA -->
   <div id="resSubIAModal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeResSubIAModalBtn">&times;</span>
@@ -523,10 +517,20 @@
       <form id="resSubIAForm">
         <input type="hidden" id="tareaIAId" name="tarea">
 
+        <!-- Nuevo campo para URL -->
         <div class="form-group">
-            <label class="form-label">Resumen</label>
-            <!-- Usar textarea o div para texto largo -->
-            <textarea class="form-input" id="resumenId" name="resumen" readonly></textarea>
+            <label class="form-label" for="url_fuente">Fuente (URL opcional)</label>
+            <input type="url" id="url_fuente" name="url_fuente"
+                placeholder="https://ejemplo.com/articulo"
+                class="form-control">
+            <small class="form-text">Puedes dejarlo vacío o ingresar una URL válida.</small>
+        </div>
+
+        <!-- Botón para ejecutar PATCH -->
+        <div class="form-group">
+            <button type="button" id="generarSubtareasBtn" class="btn btn-primary">
+            Generar nuevas subtareas
+            </button>
         </div>
 
         <div class="form-group">
@@ -923,6 +927,23 @@
       }
     }
 
+    document.getElementById("generarSubtareasBtn").addEventListener("click", async () => {
+    const tareaId = document.getElementById("tareaIAId").value;
+    const url = document.getElementById("url_fuente").value;
+
+        try {
+            const res = await api.patch(`/IA/${tareaId}/`, {
+                url: url
+            });
+
+            // Mostrar subtareas devueltas por el backend
+            document.getElementById("listaSubtareasId").textContent = res.data.subtareas_ia;
+        } catch (err) {
+            document.getElementById("resSubIAMsgBox").textContent = "Error al generar subtareas.";
+        }
+
+    });
+
 
     // CAMBIAR ESTADO TAREA (PENDIENTE, TERMINADA)
     async function cambiarEstadoTarea(tareaId, estadoActual) {
@@ -969,26 +990,29 @@
         document.getElementById("fechaFinId").value = tarea.fecha_fin;
         
       } catch (error) {
-        console.error("Error al editar tarea:", error);
+        console.error("Error al obtener datos de la tarea:", error);
       }
     }
 
-    // IA TAREA (obtener la descripción y lista de tareas del LLM Gemini)
+    // IA TAREA (obtener la lista de tareas usando LLM)
     async function iaTarea(tareaId) {
       resSubIAForm.reset();
       resSubIAModal.style.display = "flex";
+      document.getElementById("listaSubtareasId").textContent = "";
+      document.getElementById("resSubIAMsgBox").textContent = "";
+      
+      document.getElementById("tareaIAId").value = tareaId;
 
       try {
-        const res = await api.patch(`/IA/${tareaId}/`);
+        const res = await api.get(`/tareas/${tareaId}/`);
         const tarea = res.data;   
-
         document.getElementById("resSubIAModalTitulo").innerText = tarea.descripcion;
-        document.getElementById("resumenId").value = tarea.resumen_ia;
-        document.getElementById("listaSubtareasId").innerText = tarea.subtareas_ia;
+        document.getElementById("listaSubtareasId").textContent = tarea.subtareas_ia;
         
       } catch (error) {
-        console.error("Error al obtener tarea:", error);
+        console.error("Error la descripción de la tarea:", error);
       }
+      
     }
 
     // ELIMINAR CATEGORIA
