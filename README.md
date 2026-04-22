@@ -2,8 +2,7 @@
 
 # Informational Portal with Task Manager
 
-A web application combining personal task management with real-time weather and news 
-information from Lima, built with Django REST Framework and JWT authentication.
+A web application combining personal task management with real-time weather and news from Lima. Built with Django REST Framework and JWT authentication, it now includes AI-powered subtask generation using RAG (Retrieval-Augmented Generation) with Google Gemini, ChromaDB vector database, and multilingual sentence-transformers.
 
 ---
 
@@ -24,6 +23,9 @@ information from Lima, built with Django REST Framework and JWT authentication.
 ### Add Task
 ![Add task](screenshots/añadirTarea.png)
 
+### Generate list of subtasks using AI
+![Subtasks](screenshots/listaSubtareas.png)
+
 ---
 
 ## Features
@@ -35,6 +37,9 @@ information from Lima, built with Django REST Framework and JWT authentication.
 - **Filters** by task status (All / Pending / Completed / Overdue) and by category
 - **Responsive interface** built with vanilla HTML/CSS/JavaScript
 - **Automatic token refresh**
+- **AI-powered subtask generation**: automatic creation of subtasks using Google Gemini LLM.
+- **RAG (Retrieval-Augmented Generation)**: enhance subtasks with content from external URLs, using semantic search with ChromaDB and multilingual embeddings.
+
 
 ---
 
@@ -51,6 +56,13 @@ information from Lima, built with Django REST Framework and JWT authentication.
 - **CSS3** — Styles
 - **JavaScript (Vanilla)** — Client-side logic
 - **Fetch API** — HTTP requests
+
+### AI & RAG Pipeline
+- **Google Gemini 2.5 Flash Lite** — LLM for subtask generation (free tier, 10 requests/day)
+- **ChromaDB** — Persistent vector database for semantic search
+- **Sentence-Transformers** — Multilingual embeddings (`paraphrase-multilingual-MiniLM-L12-v2`)
+- **LangChain Community** — Web scraping and text splitting (WebBaseLoader, RecursiveCharacterTextSplitter)
+
 
 ---
 
@@ -73,6 +85,26 @@ The application retrieves real-time data from:
   - Create a `.env` file in the project root and define:
       APITUBE_API_KEY="your_api_key"
   - Make sure your application reads this variable from the environment.
+
+### AI & RAG
+
+The application uses **Retrieval-Augmented Generation (RAG)** to generate intelligent subtasks:
+
+1. **URL Processing**: Accepts an external URL related to the task.
+2. **Content Extraction**: Scrapes and cleans the webpage content.
+3. **Semantic Search**: Splits text into chunks and generates embeddings using a multilingual model.
+4. **Context Retrieval**: Finds the most relevant chunks based on the task description.
+5. **Subtask Generation**: Sends the context to Google Gemini to produce actionable subtasks.
+
+**Components used**:
+- **Vector Database**: ChromaDB (persistent storage)
+- **Embeddings**: `paraphrase-multilingual-MiniLM-L12-v2` (supports Spanish and English)
+- **LLM**: Google Gemini 2.5 Flash Lite
+
+⚠️ **Note**: To use the AI subtask feature you need a Google GenAI API key.
+- Sign up at [Google AI Studio](https://aistudio.google.com/).
+- Get your API key.
+- Add it to your `.env` file: GEMINI_API_KEY="your_api_key"
 
 ---
 
@@ -119,10 +151,33 @@ python manage.py runserver
    - Manage your tasks: create categories, add tasks, filter by status and category, 
    edit and delete.
 
+## AI-Powered Subtask Generation
+
+You can automatically generate a list of subtasks for each task using AI. After clicking the “IA” button, there are two options:
+
+### Basic mode (no URL)
+Click “Generar nuevas subtareas” button. The large language model (LLM) will create a logical breakdown based solely on the task description.
+
+### RAG mode (with URL)
+1. Provide a relevant URL.
+2. Click "Generate new subtasks".
+3. The system will:
+   - Scrape and process the URL content
+   - Find semantically relevant fragments
+   - Generate context-aware subtasks using Gemini
+
+**Example**:
+- Task: *"Learn to drive a car"*
+- URL: `http://chery.com.pe/blog/como-aprender-a-manejar-carro` 
+> 💡 **Tip**: For best results, use URLs from blogs, documentation, or news articles that do not require JavaScript rendering (e.g., MDN, Django docs, university sites).
+- Result: Detailed subtasks including legal requirements, vehicle familiarization, practice phases, and maintenance tips.
+
 ---
 
 ## Status
-Actively under development. Suggestions and contributions are welcome.
+✅ Core task management (CRUD, filters, JWT auth)  
+✅ Weather and news integration  
+✅ AI subtask generation (basic + RAG with external URLs)  
 
 ---
 
@@ -132,8 +187,7 @@ Actively under development. Suggestions and contributions are welcome.
 
 # Portal Informativo con Gestor de Tareas
 
-Una aplicación que combina gestión de tareas personales con información en tiempo real 
-de clima y noticias de Lima, construida con Django REST Framework y JWT para autenticación.
+Aplicación web que combina la gestión de tareas personales con el clima y las noticias de Lima en tiempo real. Construida con Django REST Framework y autenticación JWT, ahora incluye generación de subtareas con IA mediante RAG (Retrieval-Augmented Generation) con Google Gemini, la base de datos vectorial ChromaDB y embeddings multilingües de sentence-transformers.
 
 ---
 
@@ -154,6 +208,9 @@ de clima y noticias de Lima, construida con Django REST Framework y JWT para aut
 ### Añadir tarea
 ![Añadir tarea](screenshots/añadirTarea.png)
 
+### Generar lista de subtareas con IA
+![Subtareas](screenshots/listaSubtareas.png)
+
 ---
 
 ## Características
@@ -165,6 +222,9 @@ de clima y noticias de Lima, construida con Django REST Framework y JWT para aut
 -  **Filtros** por estado de tarea (Todas/Pendientes/Completadas/Atrasadas) y por categoría
 -  **Interfaz responsive** con HTML/CSS/JavaScript vanilla
 -  **Refresco automático** de tokens
+- **Generación de subtareas con IA**: creación automática de subtareas usando Google Gemini LLM.
+- **RAG (Retrieval-Augmented Generation)**: enriquece subtareas con contenido de URLs externas, usando búsqueda semántica con ChromaDB y embeddings multilingües.
+
 
 ---
 
@@ -181,6 +241,12 @@ de clima y noticias de Lima, construida con Django REST Framework y JWT para aut
 - **CSS3** - Estilos
 - **JavaScript (Vanilla)** - Lógica de cliente
 - **Fetch API** - Peticiones HTTP
+
+### Pipeline de IA y RAG
+- **Google Gemini 2.5 Flash Lite** — LLM para generación de subtareas (plan gratuito, 10 peticiones/día)
+- **ChromaDB** — Base de datos vectorial persistente para búsqueda semántica
+- **Sentence-Transformers** — Embeddings multilingües (`paraphrase-multilingual-MiniLM-L12-v2`)
+- **LangChain Community** — Web scraping y división de texto (WebBaseLoader, RecursiveCharacterTextSplitter)
 
 ---
 
@@ -201,6 +267,26 @@ de clima y noticias de Lima, construida con Django REST Framework y JWT para aut
   - Crea un archivo `.env` en la raíz del proyecto y define:
       APITUBE_API_KEY="tu_api_key"
   - Luego asegúrate de que tu aplicación lea esta variable desde el entorno.
+
+### IA y RAG
+
+La aplicación utiliza **Retrieval-Augmented Generation (RAG)** para generar subtareas inteligentes:
+
+1. **Procesamiento de URL**: Acepta una URL externa relacionada con la tarea.
+2. **Extracción de contenido**: Extrae y limpia el contenido de la página web.
+3. **Búsqueda semántica**: Divide el texto en fragmentos y genera embeddings con un modelo multilingüe.
+4. **Recuperación de contexto**: Encuentra los fragmentos más relevantes según la descripción de la tarea.
+5. **Generación de subtareas**: Envía el contexto a Google Gemini para producir subtareas accionables.
+
+**Componentes utilizados**:
+- **Base de datos vectorial**: ChromaDB (almacenamiento persistente)
+- **Embeddings**: `paraphrase-multilingual-MiniLM-L12-v2` (soporta español e inglés)
+- **LLM**: Google Gemini 2.5 Flash Lite
+
+⚠️ **Nota**: Para usar la función de subtareas con IA necesitas una API key de Google GenAI.
+- Regístrate en [Google AI Studio](https://aistudio.google.com/).
+- Obtén tu API key.
+- Agrégala a tu archivo `.env`: GEMINI_API_KEY="tu_clave_api"
 
 ---
 
@@ -247,7 +333,30 @@ python manage.py runserver
    - Gestiona tus tareas: crear categorías, añadir tareas, filtrar por estado y 
    categoría, editar y eliminar.
 
+## Generación de subtareas usando IA
+
+Puedes generar automáticamente una lista de subtareas para cada tarea mediante IA. Tras hacer clic en el botón "IA", hay dos opciones:
+
+### Modo básico (sin URL)
+Haz clic en el botón «Generar nuevas subtareas». El modelo de lenguaje grande (LLM) creará un desglose lógico basándose únicamente en la descripción de la tarea.
+
+### Modo RAG (con URL)
+1. Introduzca una URL relevante.
+2. Haga clic en «Generar nuevas subtareas».
+3. El sistema:
+   - Extraerá y procesará el contenido de la URL
+   - Encontrará fragmentos semánticamente relevantes
+   - Generará subtareas contextuales utilizando Gemini
+
+**Ejemplo**:
+- Tarea: *«Aprender a conducir un coche»*
+- URL: `http://chery.com.pe/blog/como-aprender-a-manejar-carro` 
+> 💡 **Consejo**: Para obtener los mejores resultados, utiliza direcciones URL de blogs, documentación o artículos de noticias que no requieran la ejecución de JavaScript (por ejemplo, MDN, la documentación de Django o sitios web de universidades).
+- Resultado: Subtareas detalladas que incluyen requisitos legales, familiarización con el vehículo, fases de práctica y consejos de mantenimiento.
+
 ---
 
 ## Estado
-Proyecto en desarrollo activo. Se aceptan sugerencias y mejoras.
+✅ Gestor de tareas (CRUD, filtros, autenticación JWT)  
+✅ Integración de clima y noticias  
+✅ Generación de subtareas con IA (básico + RAG con URLs externas)  

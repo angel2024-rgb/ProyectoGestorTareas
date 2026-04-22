@@ -374,6 +374,7 @@
   }
   .form-group {
       margin-bottom: 14px;
+      margin-top: 25px;
   }
   .form-label {
       display: block;
@@ -426,6 +427,33 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     background: #fafafa;
+    }
+    .modal-content button[type="button"] {
+      display: block;
+      margin: 20px auto 0;
+      background-color: var(--blue);
+      color: white;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    .modal-content button[type="button"]:hover {
+        background-color: var(--blue-dark);
+    }
+    #url_fuente {
+    width: 95%;          
+    max-width: 600px;     
+    padding: 10px;        
+    font-size: 14px;      
+    border: 1px solid #ccc; 
+    border-radius: 5px;   
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); 
+    }
+    .subtareas-group {
+    margin-top: 40px;
     }
 
   </style>
@@ -519,11 +547,10 @@
 
         <!-- Nuevo campo para URL -->
         <div class="form-group">
-            <label class="form-label" for="url_fuente">Fuente (URL opcional)</label>
+            <label class="form-label" for="url_fuente">Fuente URL (opcional)</label>
             <input type="url" id="url_fuente" name="url_fuente"
                 placeholder="https://ejemplo.com/articulo"
                 class="form-control">
-            <small class="form-text">Puedes dejarlo vacío o ingresar una URL válida.</small>
         </div>
 
         <!-- Botón para ejecutar PATCH -->
@@ -533,8 +560,8 @@
             </button>
         </div>
 
-        <div class="form-group">
-            <label class="form-label">Lista de subtareas</label>
+        <div class="form-group subtareas-group">
+            <label class="form-label">Lista de subtareas sugeridas</label>
             <pre id="listaSubtareasId"></pre>
         </div>
 
@@ -1006,7 +1033,7 @@
       try {
         const res = await api.get(`/tareas/${tareaId}/`);
         const tarea = res.data;   
-        document.getElementById("resSubIAModalTitulo").innerText = tarea.descripcion;
+        document.getElementById("resSubIAModalTitulo").innerText = "Tarea: " + tarea.descripcion;
         document.getElementById("listaSubtareasId").textContent = tarea.subtareas_ia;
         
       } catch (error) {
