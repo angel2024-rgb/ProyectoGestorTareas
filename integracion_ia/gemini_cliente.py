@@ -29,7 +29,7 @@ def procesar_url_rag(url, query=None, top_k=3):
     embeddings = model.encode(chunks)
     
     # 5. Guardar en ChromaDB
-    client = chromadb.PersistentClient(path="./data/chromadb")
+    client = chromadb.Client()
     
     collection_name = f"url_{hashlib.md5(url.encode()).hexdigest()[:8]}"
     

@@ -17,3 +17,6 @@ google-genai==1.73.1
 
 python-dotenv==1.2.2
 uvicorn==0.45.0
+
+
+gunicorn>=21.0.0
