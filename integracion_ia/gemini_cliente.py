@@ -25,7 +25,8 @@ def procesar_url_rag(url, query=None, top_k=3):
     chunks = splitter.split_text(texto_limpio)
     
     # 4. Generar embeddings
-    model = SentenceTransformer("all-MiniLM-L6-v2")
+    #model = SentenceTransformer("all-MiniLM-L6-v2")
+    model = SentenceTransformer("paraphrase-MiniLM-L3-v2")
     embeddings = model.encode(chunks)
     
     # 5. Guardar en ChromaDB
@@ -54,7 +55,7 @@ def procesar_url_rag(url, query=None, top_k=3):
     
     return None
 
-def sugerir_subtareas(descripcion_tarea: str, url: str = None) -> str:
+""" def sugerir_subtareas(descripcion_tarea: str, url: str = None) -> str:
     # Si hay URL, buscar con contexto
     contexto = ""
     if url:
@@ -64,6 +65,22 @@ def sugerir_subtareas(descripcion_tarea: str, url: str = None) -> str:
     
     # Si no, solo llamar a llamar a Gemini con la descripción de la tarea
     prompt = f"{contexto}Genera una lista de subtareas para: {descripcion_tarea}"
+    
+    response = client.models.generate_content(
+        model="gemini-2.5-flash-lite",
+        contents=prompt
+    )
+    return response.text """
+
+
+def sugerir_subtareas(descripcion_tarea: str, url: str = None) -> str:
+    contexto = ""
+    if url:
+        fragmentos = procesar_url_rag(url, query=descripcion_tarea, top_k=3)
+        if fragmentos:
+            contexto = f"\n\nBased on this context from the URL:\n{'---'.join(fragmentos)}\n\n"
+    
+    prompt = f"{contexto}Generate a list of actionable subtasks for: {descripcion_tarea}"
     
     response = client.models.generate_content(
         model="gemini-2.5-flash-lite",
