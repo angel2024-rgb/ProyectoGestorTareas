@@ -22,3 +22,6 @@ gunicorn>=21.0.0
 python-dotenv==1.2.2
 psycopg[binary]
 dj-database-url==2.2.0
+beautifulsoup4
+lxml
+html5lib
