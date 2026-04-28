@@ -20,5 +20,5 @@ numpy>=1.24.0
 # Servidor y utilidades
 gunicorn>=21.0.0
 python-dotenv==1.2.2
-psycopg[binary]==3.2.9
+psycopg[binary]
 dj-database-url==2.2.0
