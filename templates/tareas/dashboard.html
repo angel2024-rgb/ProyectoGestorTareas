@@ -578,9 +578,11 @@
     let listaCategoriasId = document.getElementById("listaCategoriasId").value
 
     // AXIOS
+    const API_BASE_URL = `${window.location.origin}/api`;
+
     const api = axios.create({
-    baseURL: "http://localhost:8000/api",  
-    headers: { "Content-Type": "application/json" }
+        baseURL: API_BASE_URL,
+        headers: { "Content-Type": "application/json" }
     });
 
     // Interceptor de request: añade el access token
@@ -602,7 +604,8 @@
         originalRequest._retry = true;
         try {
             const refreshToken = localStorage.getItem("refreshToken");
-            const res = await axios.post("http://localhost:8000/api/token/refresh/", { refresh: refreshToken });
+            const refreshUrl = `${API_BASE_URL}/token/refresh/`;  
+            const res = await axios.post(refreshUrl, { refresh: refreshToken });
             const newAccess = res.data.access;
 
             localStorage.setItem("accessToken", newAccess);
@@ -620,6 +623,7 @@
         return Promise.reject(error);
     }
     );
+
 
 
     // CARGAR CATEGORIAS

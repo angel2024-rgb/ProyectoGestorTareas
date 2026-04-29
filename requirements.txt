@@ -1,3 +1,4 @@
+# Django
 asgiref==3.11.1
 Django==6.0.2
 django-cors-headers==4.9.0
@@ -8,12 +9,19 @@ tzdata==2025.3
 django-environ==0.13.0
 requests==2.33.0
 
-chromadb==1.5.8
+# IA y RAG (con Gemini API)
+google-genai==1.73.1
 langchain==1.2.15
 langchain-community==0.4.1
-langchain-text-splitters==1.1.2 
-sentence-transformers==5.4.1
-google-genai==1.73.1
+langchain-text-splitters==1.1.2
+scikit-learn>=1.6.0   
+numpy>=1.24.0          
 
+# Servidor y utilidades
+gunicorn>=21.0.0
 python-dotenv==1.2.2
-uvicorn==0.45.0
+psycopg[binary]
+dj-database-url==2.2.0
+beautifulsoup4
+lxml
+html5lib

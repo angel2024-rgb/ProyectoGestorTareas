@@ -16,3 +16,7 @@ env/
 
 # Ignorar datos de ChromaDB
 data/chromadb/
+
+# .gitignore
+staticfiles/
+.DS_Store
